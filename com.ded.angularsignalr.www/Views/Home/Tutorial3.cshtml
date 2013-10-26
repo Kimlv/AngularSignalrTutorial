@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "Tutorial 3";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+<div ng-app="app">
+    <div id="angularController" ng-controller="userListCtrl">
+        <h2>Tutorial 3</h2>
+        <h3>Users</h3>
+        <table id="users" class="table table-striped" ng-cloak>
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in users">
+                    <td>{{user.UserName}}</td>
+                    <td>{{user.Email}}</td>
+                    <td>{{user.FirstName}}</td>
+                    <td>{{user.LastName}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form class="form-horizontal">
+            <legend>Add a new user</legend>
+            <label>UserName</label>
+            <input id="txtUserName" type="text" placeholder="UserName" ng-model="newUser.UserName">
+            <span class="help-block"></span>
+            <label>Email</label>
+            <input id="txtEmail" type="text" placeholder="Email Address" ng-model="newUser.Email">
+            <span class="help-block"></span>
+            <label>First Name</label>
+            <input id="txtFirstName" type="text" placeholder="First Name" ng-model="newUser.FirstName" />
+            <span class="help-block"></span>
+            <label>Last Name</label>
+            <input id="txtLastName" type="text" placeholder="Last Name" ng-model="newUser.LastName" />
+            <button id="btn_add_user" class="btn" ng-click="addUser()">Submit</button>
+        </form>
+
+    </div>
+</div>
+@section pageScripts{
+
+    <script type="text/javascript">
+        var app = angular.module('app', []);
+        app.value('$', $);
+
+        app.factory('userService', ['$rootScope', '$http', 'signalrServiceBase', function ($rootScope, $http, signalrServiceBase) {
+            var userService = {
+                isInitialized: function () {
+                    return signalrServiceBase.initializationComplete;
+                },
+                /// Initialize the SignalR Hub.
+                initializeService: function () {
+                    signalrServiceBase.intializeClient();
+                    if (!userService.isInitialized()) {
+                        userService.configureClientFunctions();
+                    }
+                },
+                configureClientFunctions: function () {
+                    /// These are like delegates, we are raising an event.
+                    /// The controllers subscribing to the events will handle the logic
+                    /// when the response is received.
+                    signalrServiceBase.proxy.on('receiveUsers', function (users) {
+                        $rootScope.$broadcast('receiveUsersResponse', users);
+                    });
+                    signalrServiceBase.proxy.on('receiveAddedUser', function (response) {
+                        $rootScope.$broadcast('receiveAddedUserResponse', response);
+                    });
+                },
+                getUsers: function () {
+                    signalrServiceBase.proxy.invoke('getUsers');
+                },
+                addUser: function (user) {
+                    signalrServiceBase.proxy.invoke('addUser', user);
+                }
+            }
+            return userService;
+        }]);
+
+        app.factory('signalrServiceBase', ['$', '$rootScope', function ($, $rootScope) {
+            var signalrServiceBase = {
+                connection: null,
+                proxy: null,
+                initializationComplete: false,
+                /// Initialize the SignalR Hub.
+                intializeClient: function () {
+                    console.log('initializing the signalrServiceBase.intializeClient()');
+                    if (!signalrServiceBase.initializationComplete) {
+                        signalrServiceBase.connection = $.hubConnection();
+                        signalrServiceBase.proxy = signalrServiceBase.connection.createHubProxy('tutorial3Hub');
+                        signalrServiceBase.start();
+                    }
+                    else {
+                        console.log('The signalr hub initialization is complete.  Raising the complete event.');
+                        $rootScope.$broadcast("raiseHubInitializationComplete");
+                    }
+                },
+                start: function () {
+                    //starting the connection and initializing market             
+                    signalrServiceBase.connection.start().done(function () {
+                        signalrServiceBase.initializationComplete = true;
+                        console.log('The signalr hub initialization is complete.  Raising the complete event.');
+                        $rootScope.$broadcast("raiseHubInitializationComplete");
+                    });
+                },
+                reset: function () {
+                    signalrServiceBase.proxy.invoke('reset');
+                }
+            };
+            return signalrServiceBase;
+        }]);
+
+        var userListCtrl = function ($scope, userService) {
+            /// Initialize $scope variables
+            $scope.users = [];
+            $scope.newUser = null;
+
+            /// Event handler for when the SignlaR Hub is initialized.
+            $scope.$on('raiseHubInitializationComplete', function (event) {
+                $scope.initializeControllerData();
+            });
+
+            $scope.$on('receiveUsersResponse', function (event, users) {
+                $scope.$apply(function () {
+                    $scope.users = users;
+                });
+            });
+
+            $scope.$on('receiveAddedUserResponse', function (event, user) {
+                $scope.initializeControllerData();
+            });
+
+            /// function to load the initial data into the controller.
+            $scope.initializeControllerData = function () {
+                userService.getUsers();
+            };
+
+            $scope.addUser = function () {
+                userService.addUser($scope.newUser);
+            };
+
+            /// Initialize the Service.  This will start the SignalR Hub.
+            userService.initializeService();
+        };
+    </script>
+}

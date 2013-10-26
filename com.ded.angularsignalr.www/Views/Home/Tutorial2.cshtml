@@ -1,0 +1,109 @@
+﻿@{
+    ViewBag.Title = "Tutorial 2";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+<div ng-app="app">
+    <div id="angularController" ng-controller="userListCtrl">
+        <h2>Tutorial 2</h2>
+        <h3>Users</h3>
+        <table id="users" class="table table-striped" ng-cloak>
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in users">
+                    <td>{{user.UserName}}</td>
+                    <td>{{user.Email}}</td>
+                    <td>{{user.FirstName}}</td>
+                    <td>{{user.LastName}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form class="form-horizontal">
+            <legend>Add a new user</legend>
+            <label>UserName</label>
+            <input id="txtUserName" type="text" placeholder="UserName" ng-model="newUser.UserName">
+            <span class="help-block"></span>
+            <label>Email</label>
+            <input id="txtEmail" type="text" placeholder="Email Address" ng-model="newUser.Email">
+            <span class="help-block"></span>
+            <label>First Name</label>
+            <input id="txtFirstName" type="text" placeholder="First Name" ng-model="newUser.FirstName" />
+            <span class="help-block"></span>
+            <label>Last Name</label>
+            <input id="txtLastName" type="text" placeholder="Last Name" ng-model="newUser.LastName" />
+            <button id="btn_add_user" class="btn" ng-click="addUser()">Submit</button>
+        </form>
+
+    </div>
+</div>
+@section pageScripts{
+
+    <script type="text/javascript">
+        var app = angular.module('app', []);
+
+        var userListCtrl = function ($scope, userService) {
+            /// Initialize $scope variables
+            $scope.users = [];
+            $scope.newUser = null;
+
+            /// Load the initial data into the controller.
+            $scope.initializeControllerData = function () {
+                userService.getUsers().success(function (data) {
+                    $scope.users = data;
+                }).
+                error(function (status) {
+                    alert('An error occurred retreiving the user list.');
+                });
+            };
+
+            $scope.addUser = function(){
+                userService.addUser($scope.newUser).
+                    success(function (data) {
+                        $scope.newUser = null;
+                        $scope.initializeControllerData();
+                    }).
+                    error(function (status) {
+                        alert("An error occurred adding the new user.")
+                    });
+            };
+
+            /// Call the initializeControllerData method to load the initial data.
+            $scope.initializeControllerData();
+        };
+
+        app.factory('userService', ['$rootScope', '$http', function ($rootScope, $http) {
+            var userService = {
+                getUsers: function () {
+                    var url = '/api/User';
+                    var promise = $http.get(url).
+                        success(function (data) {
+                            return data;
+                        }).
+                        error(function (status) {
+                            return status;
+                        });
+                    return promise;
+                },
+                addUser: function (user) {
+                    var url = '/api/user';
+                    var promise = $http.post(url, user).
+                        success(function (data) {
+                            return data;
+                        }).
+                        error(function (status) {
+
+                        });
+                    return promise;
+                }
+            }
+            return userService;
+        }]);
+    </script>
+}
