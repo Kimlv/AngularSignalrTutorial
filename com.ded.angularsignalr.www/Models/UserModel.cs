@@ -9,12 +9,32 @@ namespace com.ded.angularsignalr.www.Models
 {
     public class UserModel
     {
-        public static List<UserPoco> GetUsers()
+        public delegate void RaiseUserRetrievedDelegate(UserPoco user);
+
+        public RaiseUserRetrievedDelegate OnUserRetrieved;
+
+        public UserModel()
+        {
+
+        }
+        public List<UserPoco> GetUsers()
         {
             return UserPocoFactory.GetUserPocos();
         }
 
-        public static UserPoco AddUser(UserPoco userPoco)
+        public void GetUsersAsync()
+        {
+            List<UserPoco> users = UserPocoFactory.GetUserPocos();
+            if (this.OnUserRetrieved != null)
+            {
+                foreach (UserPoco user in users)
+                {
+                    this.OnUserRetrieved(user);
+                }
+            }
+        }
+
+        public UserPoco AddUser(UserPoco userPoco)
         {
             AngularSignalrDemoEntities context = new AngularSignalrDemoEntities();
             User user = new User();
@@ -26,6 +46,15 @@ namespace com.ded.angularsignalr.www.Models
             context.SaveChanges();
 
             return UserPocoFactory.GetUserPoco(user);
+        }
+
+        public void AddUserAsync(UserPoco user)
+        {
+            this.AddUser(user);
+            if (this.OnUserRetrieved != null)
+            {
+                this.OnUserRetrieved(user);
+            }
         }
     }
 }

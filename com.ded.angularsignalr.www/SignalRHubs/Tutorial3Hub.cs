@@ -10,15 +10,22 @@ namespace com.ded.angularsignalr.www.SignalRHubs
 {
     public class Tutorial3Hub : Hub
     {
+        private UserModel _userModel = null;
+
+        public Tutorial3Hub()
+        {
+            this._userModel = new UserModel();
+        }
+
         public void GetUsers()
         {
-            List<UserPoco> userPocos = UserModel.GetUsers();
+            List<UserPoco> userPocos = this._userModel.GetUsers();
             this.Clients.Caller.receiveUsers(userPocos);
         }
 
         public void AddUser(UserPoco user)
         {
-            UserPoco userPoco = UserModel.AddUser(user);
+            UserPoco userPoco = this._userModel.AddUser(user);
             this.Clients.All.receiveAddedUser(userPoco);
         }
     }

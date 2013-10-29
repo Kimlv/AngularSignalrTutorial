@@ -11,9 +11,16 @@ namespace com.ded.angularsignalr.www.Controllers.api
 {
     public class UserController : ApiController
     {
+        private UserModel _userModel = null;
+
+        public UserController()
+        {
+            this._userModel = new UserModel();
+        }
+
         public List<UserPoco> Get()
         {
-            return UserModel.GetUsers();
+            return this._userModel.GetUsers();
         }
 
         public bool Post(UserPoco userPoco)
@@ -21,7 +28,7 @@ namespace com.ded.angularsignalr.www.Controllers.api
             bool result = false;
             try
             {
-                UserModel.AddUser(userPoco);
+                this._userModel.AddUser(userPoco);
                 result = true;
             }
             catch { }

@@ -29,5 +29,10 @@ namespace com.ded.angularsignalr.www.Controllers.Mvc
         {
             return this.View();
         }
+
+        public ActionResult Tutorial4()
+        {
+            return this.View();
+        }
     }
 }

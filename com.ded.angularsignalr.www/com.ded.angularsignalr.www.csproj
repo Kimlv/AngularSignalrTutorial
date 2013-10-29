@@ -141,6 +141,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignalRHubs\Tutorial1Hub.cs" />
     <Compile Include="SignalRHubs\Tutorial3Hub.cs" />
+    <Compile Include="SignalRHubs\Tutorial4Hub.cs" />
     <Compile Include="TutorialEntities.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -202,6 +203,7 @@
       <DependentUpon>TutorialEntities.edmx</DependentUpon>
       <LastGenOutput>TutorialEntities.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\Home\Tutorial4.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="angular\controllers\" />

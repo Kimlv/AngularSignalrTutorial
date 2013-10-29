@@ -8,25 +8,29 @@ using System.Web;
 
 namespace com.ded.angularsignalr.www.SignalRHubs
 {
-    public class Tutorial1Hub : Hub
+    public class Tutorial4Hub : Hub
     {
         private UserModel _userModel = null;
 
-        public Tutorial1Hub()
+        public Tutorial4Hub()
         {
             this._userModel = new UserModel();
+            this._userModel.OnUserRetrieved += ReceiveUserEvent;
         }
 
         public void GetUsers()
         {
-            List<UserPoco> userPocos = this._userModel.GetUsers();
-            this.Clients.Caller.receiveUsers(userPocos);
+            this._userModel.GetUsersAsync();
         }
 
         public void AddUser(UserPoco user)
         {
-            UserPoco userPoco = this._userModel.AddUser(user);
-            this.Clients.All.receiveAddedUser(userPoco);
+           this._userModel.AddUserAsync(user);
+        }
+
+        public void ReceiveUserEvent(UserPoco user)
+        {
+            this.Clients.Caller.receiveUser(user);
         }
     }
 }
