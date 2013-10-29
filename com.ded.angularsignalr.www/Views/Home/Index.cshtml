@@ -5,6 +5,28 @@
 
 <h1>Angular Signalr Demo</h1>
 
+<h2>Tutorial 1</h2>
+<p>
+    Tutorial 1 uses only SignalR.  It opens a persistent connection to the server to retrieve a list of users, and to add a user.  Think of SignalR as being like socketio in NodeJS, but working with more than just sockets for backward browser compatability.  Signlar will determine which protocol to use for communication base 
+    on what the browser is capable of.  I believe sockets are only supported using windows 8 and IIS 8.  However, this is all transparent to the server.<br /><br/>
+    <a href="http://www.asp.net/signalr/videos/getting-started/signalr-and-web-sockets">http://www.asp.net/signalr/videos/getting-started/signalr-and-web-sockets</a>
+</p>
+<h2>Tutorial 2</h2>
+<p>
+    Tutorial uses AngularJS with the Angular $http service to make rest calls to a MVC WebAPI back end to retrieve a list of users, and to add a user.
+</p>
+<h2>Tutorial 3</h2>
+<p>
+    Tutorial 3 uses AngularJS with SignalR to open a persisten connection to the server.  It performs all the functionality of the previous tutorials.
+</p>
+<h2>Tutorial 4</h2>
+<p>
+    Tutorial 4 uses AngularJS with SignalR.  However, this tutorial uses delegates on the MVC Models to raise events to the SignalR hub.  This allow the application server to send data to the server in a more dynamic fashion.
+    Rather than returning a list of users.  It streams the users to the client, one at a time.  Though this is not a good use of resources for this example, it illustrates that data can be send on demand by the server to the client.  
+    A huge benefit here is that we can break a list up and pass the data to the client in chunks (think paging).  Another example would be to request data from the server using paging.  Where using delegates we could pass the data and the number of pages to client in an asynchronous fashion from the server.  
+    All the client has to do is tell the server to get it data, the server can then pass multiple pieces of data back to the client.  Of course SignalR doesn't make sense in all cases, but when it makes sense, it is pretty awesome.
+</p>
+
 @section pageScripts{
 
 }
