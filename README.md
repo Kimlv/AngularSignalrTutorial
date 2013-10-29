@@ -3,7 +3,7 @@ AngularSignalrTutorial
 
 This project shows how to use SignalR, Angular and SignalR with Angular.
 Currently it consists of three tutorials.  The first tutorial uses only signalr to communicate with a back end database (a SQL Server MDF file).
-The second tutorial uses angular and the $http service to pull data from the database.  The third tutorial uses signalr with angular to pull the data bac from the database.
+The second tutorial uses angular and the $http service to pull data from the database.  The third tutorial uses signalr with angular to pull the data back from the database.
 
 
 Tutorial 4 uses Delegates in the MVC Models with signalr to fire multiple client events from a single call to the server.
